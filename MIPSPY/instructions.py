@@ -3,7 +3,7 @@ from math import ceil
 import re
 from .mips import MIPS
 
-# Helper function
+# Helper function to emulate the 32 bit word size
 def validate(tmp: int) -> int:
     if tmp > 2147483647:
         # Only grab 8 relevant bytes
@@ -18,9 +18,14 @@ def validate(tmp: int) -> int:
 
 
 def sw_offset(mips: MIPS, register: str) -> int:
+    
     offset, reg = register.split("(")
     # Conver offset
-    offset = int(offset)
+    if offset:
+        offset = int(offset)
+    else:
+        offset = 0
+        
     # Clean value by cutting off leading parenthesis
     reg = reg[:-1]
 
