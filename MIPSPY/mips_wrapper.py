@@ -27,11 +27,11 @@ class debugger(MIPS):
         with open(filepath, "w") as file:
             file.write("Instruction set\n")
             for num, line in enumerate(self.instruction_set):
-                file.write(f"{num} : {' '.join(line)}\n")
+                file.write(f"{num:<4}: {' '.join(line)}\n")
             file.write("\n\n\n")
             file.write("Data set\n")
             for pos, b in enumerate(self.data):
-                file.write(f"{pos : 4}: \t{b}\t| {chr(b): 3}\t| {hex(b)}\n")
+                file.write(f"{pos:4}: \t{b}\t| {chr(b):3}\t| {hex(b)}\n")
             file.write("\n\n\n")
             file.write("Instruction labels\n")
             for num, line in enumerate(self.data_labels):
@@ -42,23 +42,32 @@ class debugger(MIPS):
                 file.write(f"{num} : {line}\n")
 
     def run(self, lines_to_run: int):
-        while lines_to_run != 0:
-            
-            instruction = self.instruction_set[self.program_counter]
-            # Get instruction to run
-            cmd: Callable = self.get_instruction(instruction[0])
-            # Run instruction
+        try:
+            while lines_to_run != 0:
+                
+                instruction = self.instruction_set[self.program_counter]
+                # Get instruction to run
+                cmd: Callable = self.get_instruction(instruction[0])
+                # Run instruction
 
-            cmd(self, *instruction[1:])
-
-            # increment pc by 1
-            self.program_counter += 1
-            lines_to_run -= 1
-            
-            # check for breakpoint first
-            if self.program_counter in self.breakpoints:
-                print(f"-> stopped at {self.breakpoints[self.program_counter]}, press run to continue")
-                break
+                try:
+                    cmd(self, *instruction[1:])
+                    
+                except Exception:
+                    print("-X Crashed, see current pc")
+                    break
+                
+                
+                # increment pc by 1
+                self.program_counter += 1
+                lines_to_run -= 1
+                
+                # check for breakpoint first
+                if self.program_counter in self.breakpoints:
+                    print(f"-> stopped at {self.breakpoints[self.program_counter]}, press run to continue")
+                    break
+        except KeyboardInterrupt:
+            print("-X Exiting run early")
             
     def debug_loop(self):
         # Commands to implement

@@ -82,12 +82,12 @@ def addiu(mips: MIPS, reg1, reg2, imd):
     mips.registers[reg1] = mips.registers[reg2] + int(imd)
 
 
-# multiply (without overflow)
+# multiply (without overflow) TODO: fix multiplication
 def mul(mips: MIPS, reg1, reg2, reg3):
     mips.registers[reg1] = mips.registers[reg2] * mips.registers[reg3]
 
 
-# multiply (with overflow) Dal. do
+# multiply (with overflow) TODO: also fix this one too
 def mult(mips: MIPS, reg1, reg2):
     ans: int = mips.registers[reg1] * mips.registers[reg2]
     bs = ans.to_bytes(ceil(ans.bit_length() / 8), "big")
@@ -98,7 +98,7 @@ def mult(mips: MIPS, reg1, reg2):
         mips.registers["$lo"] = int.from_bytes(bs, "big")  # grabs last 4 bytes
 
 
-# divide TODO:
+# divide TODO: implement division
 def div(mips: MIPS, reg1, reg2):
     mips
 
