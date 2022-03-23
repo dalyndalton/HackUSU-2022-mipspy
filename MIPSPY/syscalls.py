@@ -28,13 +28,13 @@ def syscall(mips: MIPS):
         case 8:
             # read_string
             str_length = mips.registers.get("$a1")
-            input_str = input()
-            if(len(input_str) > str_length):
-                print("Error! Too many characters in string")
-            else:
-                # TODO: set this to a memory location specified 
-                # by the value of a0, then reset a0 to 0
-                mips.registers["$a0"] = input_str
+            input_str = input()[:str_length]
+                
+            # Add string to data array
+            bites = bytearray(input_str + '\0', 'utf-8')
+            mips.data += bites
+            mips.registers["$a0"] = mips.data_ptr
+            mips.data_ptr += len(bites)
             return
         case 9:
             #sbrk not supported
@@ -76,19 +76,16 @@ def syscall(mips: MIPS):
             mips.registers["$a0"] = input()
             sys.exit()
 
-def print_string(bytes: bytearray):
-    skip = False
-    for pos, byte in enumerate(bytes):
-        if skip:
-            skip = False
-            continue
-        
-        if byte == 0:
+def print_string(bites: bytearray):
+    for pos, bite in enumerate(bites):
+        if bite == 0:
             break
         
-        if chr(byte) == '\\':
-            # "manage" specials
-            next = bytes[pos + 1]
+        if chr(bite) == '\\':
+            # "manage" specials character
+            # TODO: implement the rest of the escape characters
+            
+            next = bites.pop(pos + 1)
             
             match chr(next):
                 case 'n':
@@ -97,8 +94,6 @@ def print_string(bytes: bytearray):
                     print('\\', end="")
                 case 't':
                     print('\t', end="")
-                    
-            skip=True
-            
+                                
         else:
-            print(chr(byte), end="")
+            print(chr(bite), end="")

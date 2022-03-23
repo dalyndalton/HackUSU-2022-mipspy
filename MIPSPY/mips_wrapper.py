@@ -27,11 +27,11 @@ class debugger(MIPS):
         with open(filepath, "w") as file:
             file.write("Instruction set\n")
             for num, line in enumerate(self.instruction_set):
-                file.write(f"{num} : {line}\n")
+                file.write(f"{num} : {' '.join(line)}\n")
             file.write("\n\n\n")
             file.write("Data set\n")
-            for num, line in enumerate(self.data_set):
-                file.write(f"{num} : {line}\n")
+            for pos, b in enumerate(self.data):
+                file.write(f"{pos : 4}: \t{b}\t| {chr(b): 3}\t| {hex(b)}\n")
             file.write("\n\n\n")
             file.write("Instruction labels\n")
             for num, line in enumerate(self.data_labels):
@@ -91,7 +91,7 @@ class debugger(MIPS):
                         for ele in arguments[1:]:
                             self.breakpoints.pop(self.instr_labels[ele])
                             
-                    case 'dp':
+                    case 'dp' | 'dump':
                         if len(arguments) >= 2:
                             self.dump_data(arguments[1])
                         else: 
@@ -129,12 +129,14 @@ class debugger(MIPS):
                             print("-| invalid command, use h for help")
                         else:
                             self.load_checkpoint(arguments[1])
-                            
+                    case 'data':
+                        for pos, b in enumerate(self.data):
+                            print(f"-| {pos : 4}: \t{b}\t|{chr(b):^3}\t| {hex(b)}")
                     case 'help':
                         self.help()   
                          
                     case '_':
-                        print("-| invalid command, use h for help")
+                        print("-|  invalid command, use h for help")
                         
         except KeyboardInterrupt:
             print("\n-| Exiting program...")

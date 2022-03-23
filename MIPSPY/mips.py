@@ -66,7 +66,7 @@ class MIPS:
                 byte = bytearray(int(command[1]).to_bytes(4, 'big'))
                     
             elif (command[0] == ".asciiz"):
-                command[1] = command[1].replace('"', '')
+                command[1] = command[1].replace('"', '') # remove quotations
                 byte = bytearray(command[1] + '\0', 'utf-8')
             
             # Add to data array 
@@ -76,7 +76,7 @@ class MIPS:
             self.data_labels[key] = self.data_ptr
             self.data_ptr = self.data_ptr + len(byte) - 1
 
-        # Update %sp
+        # Update %sp FIXME: This shouldn't be how the sp is initalized
         self.registers['$sp'] = len(self.data) - 1
 
     def run(self):

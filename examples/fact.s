@@ -1,6 +1,7 @@
 .data
     prompt: .asciiz "Input an integer x:\n"
     result: .asciiz "Fact(x) = "
+    
 .text
 main:
     # show prompt

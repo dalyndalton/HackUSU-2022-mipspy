@@ -1,6 +1,5 @@
 # MIPSPY 
 ## *A MIPS simulator / debugger built in python*
-
 MIPSPY aims to simplyfy the running, debugging, and creation of simple mips scripts using a lightweight terminal design, rather than a burdensome IDE like some other clients do.
 
 ## FEATURES
