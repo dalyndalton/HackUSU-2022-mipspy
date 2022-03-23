@@ -1,4 +1,4 @@
-#! user/bin/python3
+#! /usr/bin/env python3.10
 
 import argparse
 from pickle import TRUE

@@ -18,14 +18,14 @@ def validate(tmp: int) -> int:
 
 
 def sw_offset(mips: MIPS, register: str) -> int:
-    
+
     offset, reg = register.split("(")
     # Conver offset
     if offset:
         offset = int(offset)
     else:
         offset = 0
-        
+
     # Clean value by cutting off leading parenthesis
     reg = reg[:-1]
 
@@ -98,7 +98,7 @@ def mult(mips: MIPS, reg1, reg2):
         mips.registers["$lo"] = int.from_bytes(bs, "big")  # grabs last 4 bytes
 
 
-# divide Dal. do
+# divide TODO:
 def div(mips: MIPS, reg1, reg2):
     mips
 
@@ -141,9 +141,7 @@ def srl_(mips: MIPS, reg1, reg2, imd):
 def lw(mips: MIPS, reg1, adr1: str):
     if "(" in adr1:
         adr1 = lw_offset(mips, adr1)
-    ret = int.from_bytes(mips.data[adr1: adr1 + 4], "big", signed=True)
-    if reg1 == "ra":
-        ret = ret // 4
+    ret = int.from_bytes(mips.data[adr1 : adr1 + 4], "big", signed=True)
 
     mips.registers[reg1] = ret
 
@@ -155,6 +153,8 @@ def sw(mips: MIPS, reg1, adr1):
     if "(" in adr1:
         adr1 = sw_offset(mips, adr1)
 
+    # TODO: FIX THIS
+
     l = list(mips.data)
     if (len(l) - 1) < adr1 + 4:
         l += [0] * ((adr1 + 4) - ((len(l)) - 1))
@@ -163,7 +163,7 @@ def sw(mips: MIPS, reg1, adr1):
     mips.data_ptr = len(mips.data) - 1
 
 
-# load upper immediate
+# load upper immediate TODO:
 def lui(mips: MIPS, reg1, const: int):
     u_bytes = const.to_bytes(2, "big")
     l_bytes = mips.registers[reg1]
@@ -268,12 +268,13 @@ def j(mips: MIPS, label):
 
 # jump register
 def jr(mips: MIPS, reg1):
-    mips.program_counter = mips.registers[reg1]
+    # We convert the base 4 positioning of our register to a program counter
+    mips.program_counter = mips.registers[reg1] // 4
 
 
 # jump and link
 def jal(mips: MIPS, label):
-    mips.registers["$ra"] = mips.program_counter
+    mips.registers["$ra"] = mips.program_counter * 4
     mips.program_counter = mips.instr_labels[label]
 
     mips.program_counter -= 1
@@ -281,7 +282,8 @@ def jal(mips: MIPS, label):
 
 # jump and link register
 def jalr(mips: MIPS, reg1):
-    mips.registers["$ra"] = mips.program_counter
+    # convert from our program counter to base 4
+    mips.registers["$ra"] = mips.program_counter * 4
     mips.program_counter = mips.instr_labels[mips.registers[reg1]]
 
     mips.program_counter -= 1
